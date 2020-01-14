@@ -1,0 +1,415 @@
+﻿SUMMARY
+> density<-read.csv("c:/Users/gongyujun/Desktop/Density data of crime and neiborhood characristics.csv")
+> View(density)
+> summary(density)
+> plot(density(density$robbery.density, na.rm = TRUE), main = "")
+> plot(density(density$Parks, na.rm = TRUE), main = "")
+> plot(density(density$HeadStartPrograms, na.rm = TRUE), main = "")
+> plot(robbery.density ~ LiquorLicenses, data = density)
+> abline(lm(robbery.density ~ LiquorLicenses, data = density), lty = 2)
+> plot(robbery.density ~ Playgrounds, data = density)
+> abline(lm(robbery.density ~ Playgrounds, data = density), lty = 2)
+> plot(robbery.density ~ Parks, data = density)
+> abline(lm(robbery.density ~ Parks, data = density), lty = 2)
+> plot(robbery.density ~ HeadStartPrograms, data = density)
+> abline(lm(robbery.density ~ HeadStartPrograms, data = density), lty = 2)
+> boxplot(density$robbery.density)
+> boxplot(density$Parks)
+> boxplot(density$LiquorLicenses)
+
+
+COLLINEARITY CHECK
+lmod = lm(robbery.density ~ house.rent.percent + bachelor.rate + PCT_POVERTY + MED_HH_INCOME + sqrt(PoliceStations) + sqrt(BikeRacks) + ParkRestrooms + PublicLibraries + HeadStartPrograms + PrekindergartenSchools + ElementarySchools..5th. + Colleges..Bachelors., data = cdata, subset = (names = -c(2,16)))
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+cdata = subset(cdata, select = -c(area))
+lmod = update(lmod, . ~ . - area)
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+cdata = subset(cdata, select = -c(Colleges..Graduate.))
+lmod = update(lmod, . ~ . - Colleges..Graduate.)
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+cdata = subset(cdata, select = -c(TotalIndividualSchools))
+lmod = update(lmod, . ~ . - TotalIndividualSchools)
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+cdata = subset(cdata, select = -c(Colleges..Associates.))
+lmod = update(lmod, . ~ . - Colleges..Associates.)
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+cdata = subset(cdata, select = -c(TechnicalInstitutes))
+lmod = update(lmod, . ~ . - TechnicalInstitutes)
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+cdata = subset(cdata, select = -c(Kindergartens))
+lmod = update(lmod, . ~ . - Kindergartens)
+vif(lmod)
+round(cor(cdata), 3)
+colldiag(lmod, scale = FALSE)
+
+
+sumary(lmod)
+
+
+
+
+VARIABLE SELECTION 
+density<-read.csv("C:/Users/cyct9/Desktop/Density data of crime and neiborhood characristics.csv")
+
+cdata2 = subset(density, select = -c(NBHD_NAME, murder.density, sex.assault.density, auto.thief.density, ConvenienceStores, ChildCareCenters, area, Colleges..Graduate., TotalIndividualSchools, Colleges..Associates., TechnicalInstitutes, Kindergartens))
+library(leaps)
+lmod<-lm(robbery.density~.,data=cdata2)
+b<-regsubsets(robbery.density~.,data=cdata2,nvmax=19)
+rs<-summary(b)
+rs$which
+p=2:20
+aic = rs$bic + p * (2 - log(76))
+plot(aic ~ p)
+#using aic and residual
+rs$which[which.min(aic),]
+rs$which[which.max(rs$adjr),]
+#cp
+cp = rs$cp
+plot(cp ~ p)
+abline(0, 1)
+subsets(b, statistic = "cp", legend = FALSE)
+abline(1, 1)
+
+print(aic)
+
+library(car)
+# plot BIC vs # of predictors
+plot(rs$bic ~ p, ylab = "BIC")
+subsets(b, statistic = "bic", legend = FALSE)
+#stepwise change 
+step(lmod, direction="both")
+data(cdata2)
+lmodaic<-lm(robbery.density~PoliceStations)
+cdata3=subset(cdata2,select = -c(LiquorLicenses,Playgrounds,ParkAcres,Parks,GroceryStores,NumberChildrenInHeadStart,HealthClinics,MiddleSchools..8th.,Highschools..12th.))
+lmod3<-lm(robbery.density~.,data=cdata3)
+lmod3$coef
+
+
+CHECKING MODEL STRUCTURE 
+> density<-read.csv("C:/Users/CaraY/Downloads/Density data of crime and neiborhood characristics-Updated-Cara.csv")
+> View(density)
+> cdata2 = subset(density, select = -c(NBHD_NAME, murder.density, sex.assault.density, auto.thief.density, ConvenienceStores, ChildCareCenters, area, Colleges..Graduate., TotalIndividualSchools, Colleges..Associates., TechnicalInstitutes, Kindergartens))
+> cdata3=subset(cdata2,select = -c(LiquorLicenses,Playgrounds,ParkAcres,Parks,GroceryStores,NumberChildrenInHeadStart,HealthClinics,MiddleSchools..8th.,Highschools..12th.))
+> library(car)
+   > residualPlots(lmod3)
+> marginalModelPlots(lmod3)
+> avPlots(lmod3)
+>lmod3<-lm(robbery.density~PoliceStations+FireStations+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ RecreationCenters+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=cdata3)
+> crPlots(lmod3)
+>lmod4<-lm(robbery.density~PoliceStations+sqrt(FireStations)+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ RecreationCenters+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=cdata3)
+> crPlots(lmod4)
+
+
+VARIABLE SELECTION
+lmod4 = lm(robbery.density ~ PoliceStations+ sqrt(FireStations)+ BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ RecreationCenters+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors., data = density)
+step(lmod, direction="both")
+
+
+CHECKING MODEL STRUCTURE AGAIN
+> lmod3<-lm(robbery.density~PoliceStations+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=cdata3)
+> residualPlots(lmod3)
+> marginalModelPlots(lmod3)
+> avPlots(lmod3)
+> crPlots(lmod3)
+> lmod3<-lm(robbery.density~sqrt(PoliceStations)+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=cdata3)
+
+
+CHECKING ERROR ASSUMPTIONS 
+-constant variance
+> par(mfrow = c(1, 1))
+> plot(fitted(lmod3), residuals(lmod3), xlab = "fitted values", ylab = "residuals")
+> abline(h = 0) # plot horizontal line at zero
+  
+
+-normality
+> qqPlot(residuals(lmod3))
+  
+
+> shapiro.test(residuals(lmod3))
+             Shapiro-Wilk normality test
+data:  residuals(lmod3)
+W = 0.95559, p-value = 0.00835
+-correlated error
+> n <- length(residuals(lmod3))
+> plot(tail(residuals(lmod3), n - 1) ~ head(residuals(lmod3), n - 1),
++      xlab = expression(hat(epsilon)[i]), ylab = expression(hat(epsilon)[i + 1]))
+> abline(h = 0,v = 0,col = grey(0.75))
+  
+
+dwtest(robbery.density~PoliceStations+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=cdata3)
+             Durbin-Watson test
+data:  robbery.density ~ PoliceStations + BikeRacks + ParkRestrooms +         PublicLibraries + HeadStartPrograms + PrekindergartenSchools +         ElementarySchools..5th. + Colleges..Bachelors.
+DW = 1.96, p-value = 0.44
+alternative hypothesis: true autocorrelation is greater than 0
+
+
+CHECKING INFLUENTIAL  OBSERVATIONS
+> cook <- cooks.distance(lmod3)
+> halfnorm(cook, n = 3, labs = neighborhoods, ylab = "Cook's distances")
+  
+
+> lmod4<-lm(robbery.density~PoliceStations+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=density,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> sumary(lmod4)
+                            Estimate Std. Error t value Pr(>|t|)
+(Intercept)              0.00654        0.00118        5.54  5.6e-07
+PoliceStations              22.94520        5.54719        4.14   0.0001
+BikeRacks                    1.58117        0.14124   11.19  < 2e-16
+ParkRestrooms               -8.81500        3.87488   -2.27   0.0261
+PublicLibraries             16.64128   11.18768        1.49   0.1416
+HeadStartPrograms           23.52932        4.76248        4.94  5.5e-06
+PrekindergartenSchools   1.50031        3.68986        0.41   0.6856
+ElementarySchools..5th. -3.55004        4.41753   -0.80   0.4245
+Colleges..Bachelors.        12.28052   10.34141        1.19   0.2392
+ 
+n = 76, p = 9, Residual SE = 0.006, R-Squared = 0.86
+> lmod3<-lm(robbery.density~PoliceStations+BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+ PrekindergartenSchools+ ElementarySchools..5th.+ Colleges..Bachelors.,data=cdata3)
+> sumary(lmod3)
+                             Estimate Std. Error t value Pr(>|t|)
+(Intercept)               0.00588        0.00127        4.63  1.6e-05
+PoliceStations           31.06877        5.62308        5.53  5.4e-07
+BikeRacks                 1.44140        0.11679   12.34  < 2e-16
+ParkRestrooms            -8.55525        3.98648   -2.15  0.03539
+PublicLibraries          21.58866   12.24721        1.76  0.08237
+HeadStartPrograms        14.42512        4.49877        3.21  0.00204
+PrekindergartenSchools   10.46332        3.15518        3.32  0.00146
+ElementarySchools..5th. -12.63315    4.13090   -3.06  0.00317
+Colleges..Bachelors.     22.27086        5.81005        3.83  0.00028
+ 
+n = 78, p = 9, Residual SE = 0.006, R-Squared = 0.85
+
+
+SUMMARY
+> plot(density(density$house.rent.percent, na.rm = TRUE), main = "")
+> plot(density(density$PCT_POVERTY, na.rm = TRUE), main = "")
+> plot(robbery.density ~ house.rent.percent, data = density)
+> plot(robbery.density ~ PCT_POVERTY, data = density)
+
+
+VARIABLE SELECTION 
+densitydata<-read.csv("C:/Users/cyct9/Desktop/Densitydata.csv")
+newdata<-subset(densitydata,select = c("robbery.density","house.rent.percent","bachelor.rate","PCT_POVERTY","MED_HH_INCOME","PoliceStations","BikeRacks","ParkRestrooms","PublicLibraries","HeadStartPrograms","PrekindergartenSchools","ElementarySchools..5th.","Colleges..Bachelors."))
+lmod<-lm(robbery.density~.,data=newdata)
+library(leaps)
+step(lmod, direction="both")
+
+
+STRUCTURE 
+> neighborhoods <- row.names(density)
+> lmod3<-lm(robbery.density~house.rent.percent +PCT_POVERTY +PoliceStations + BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=cdata3,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> residualPlots(lmod3)
+                     Test stat Pr(>|Test stat|)  
+house.rent.percent      1.0923          0.27869  
+PCT_POVERTY             0.0571          0.95465  
+PoliceStations         -0.2481          0.80479  
+BikeRacks               1.7226          0.08964 .
+ParkRestrooms           0.1341          0.89372  
+PublicLibraries        -1.1262          0.26416  
+HeadStartPrograms       0.0399          0.96833  
+Colleges..Bachelors.    1.4217          0.15982  
+Tukey test              2.3706          0.01776 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+
+There maybe a structural problem when comparing the residuals to the house rent percent, as there is a not obvious systematic pattern at a downward angle at the beginning of the data.
+> marginalModelPlots(lmod3)
+  
+
+> avPlots(lmod3)
+  
+> crPlots(lmod3)
+> lmod4<-lm(robbery.density~house.rent.percent +PCT_POVERTY +sqrt(PoliceStations) + BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=cdata3,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> crPlots(lmod4)
+> lmod5<-lm(robbery.density~house.rent.percent +PCT_POVERTY +PoliceStations +I(PoliceStations^2) + BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=cdata3,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> crPlots(lmod5,order=2)
+> lmod6<-lm(robbery.density~house.rent.percent +PCT_POVERTY +PoliceStations +I(PoliceStations^2) + sqrt(BikeRacks)+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=cdata3,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> crPlots(lmod6,order=2)
+> lmod7<-lm(robbery.density~house.rent.percent +PCT_POVERTY +PoliceStations + sqrt(BikeRacks)+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=cdata3,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> crPlots(lmod7)
+> residualPlots(lmod5)
+                     Test stat Pr(>|Test stat|)  
+house.rent.percent      1.1016          0.27468  
+PCT_POVERTY             0.0451          0.96417  
+PoliceStations         -0.3092          0.75813  
+I(PoliceStations^2)     0.5108          0.61123  
+BikeRacks               1.6988          0.09413 .
+ParkRestrooms           0.1010          0.91983  
+PublicLibraries        -1.1040          0.27368  
+HeadStartPrograms       0.0621          0.95066  
+Colleges..Bachelors.    1.4006          0.16609  
+Tukey test              2.3514          0.01870 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+
+  
+
+> marginalModelPlots(lmod5)
+  
+
+  
+
+> avPlots(lmod5)
+  
+> options(digits = 5, scipen = 2, show.signif.stars = FALSE)
+> ceresPlots(lmod5,order=2)
+  
+
+CHECKING ERROR ASSUMPTION
+-constant variance
+> par(mfrow = c(1, 1))
+> plot(fitted(lmod5), residuals(lmod5), xlab = "fitted values", ylab = "residuals")
+> abline(h = 0) # plot horizontal line at zero
+> plot(fitted(lmod5), sqrt(abs(residuals(lmod5))), xlab = "fitted values", ylab = "sqrt(|residuals|)")
+-normality
+> qqPlot(residuals(lmod5))
+> shapiro.test(residuals(lmod5))
+             Shapiro-Wilk normality test
+data:  residuals(lmod5)
+W = 0.9425, p-value = 0.00182
+-correlated errors
+> n <- length(residuals(lmod5))
+> plot(tail(residuals(lmod5), n - 1) ~ head(residuals(lmod5), n - 1),
++      xlab = expression(hat(epsilon)[i]), ylab = expression(hat(epsilon)[i + 1]))
+> abline(h = 0,v = 0,col = grey(0.75))
+> dwtest(lmod5)
+             Durbin-Watson test
+data:  lmod5
+DW = 1.737, p-value = 0.1303
+alternative hypothesis: true autocorrelation is greater than 0
+
+
+CHECKING INFLUENTIAL OBSERVATIONS 
+> cook <- cooks.distance(lmod5)
+> halfnorm(cook, n = 3, labs = neighborhoods, ylab = "Cook's distances")
+> lmod6<-lm(robbery.density~house.rent.percent +PCT_POVERTY +PoliceStations+I(PoliceStations^2) + BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=density,subset = (neighborhoods!="16"&neighborhoods!="2"&neighborhoods!="9"))
+> sumary(lmod6)
+                        Estimate  Std. Error t value  Pr(>|t|)
+(Intercept)          -1.0429e-03  1.7289e-03 -0.6033  0.548441
+house.rent.percent    8.2046e-03  3.9470e-03  2.0787  0.041598
+PCT_POVERTY           2.0281e-04  7.5789e-05  2.6760  0.009418
+PoliceStations        2.3161e+01  1.1351e+01  2.0406  0.045361
+I(PoliceStations^2)  -5.5867e+03  1.6931e+04 -0.3300  0.742483
+BikeRacks             1.4851e+00  1.1871e-01 12.5102 < 2.2e-16
+ParkRestrooms        -6.5463e+00  3.4508e+00 -1.8971  0.062265
+PublicLibraries       1.5528e+01  9.2940e+00  1.6707  0.099587
+HeadStartPrograms     1.5316e+01  3.3046e+00  4.6346 1.772e-05
+Colleges..Bachelors.  1.6988e+01  8.7180e+00  1.9486  0.055666
+ 
+n = 75, p = 10, Residual SE = 0.00467, R-Squared = 0.9
+> lmod6<-lm(robbery.density~house.rent.percent +PCT_POVERTY +PoliceStations+I(PoliceStations^2) + BikeRacks+ ParkRestrooms+ PublicLibraries+ HeadStartPrograms+Colleges..Bachelors.,data=density,subset = (neighborhoods!="16"&neighborhoods!="2"))
+> sumary(lmod6)
+                        Estimate  Std. Error t value  Pr(>|t|)
+(Intercept)          -1.3894e-03  1.7172e-03 -0.8091   0.42135
+house.rent.percent    9.5252e-03  3.8341e-03  2.4843   0.01552
+PCT_POVERTY           1.9176e-04  7.5705e-05  2.5329   0.01370
+PoliceStations        2.2133e+01  1.1382e+01  1.9445   0.05610
+I(PoliceStations^2)  -4.2150e+03  1.6986e+04 -0.2481   0.80479
+BikeRacks             1.4724e+00  1.1893e-01 12.3807 < 2.2e-16
+ParkRestrooms        -6.7441e+00  3.4654e+00 -1.9461   0.05590
+PublicLibraries       1.6383e+01  9.3191e+00  1.7580   0.08339
+HeadStartPrograms     1.5290e+01  3.3219e+00  4.6030 1.948e-05
+Colleges..Bachelors.  1.8149e+01  8.7175e+00  2.0819   0.04123
+
+
+HYPOTHESIS TEST
+names = row.names(cdata)
+
+
+lmod5 = lm(robbery.density ~ house.rent.percent + PCT_POVERTY + I(PoliceStations^2) + BikeRacks + ParkRestrooms + PublicLibraries + HeadStartPrograms + Colleges..Bachelors., data=cdata, subset = (names!="2"&names!="16"))
+
+
+summary(lmod5)
+
+
+Call:
+lm(formula = robbery.density ~ house.rent.percent + PCT_POVERTY + 
+    poly(PoliceStations, 2) + BikeRacks + ParkRestrooms + PublicLibraries + 
+    HeadStartPrograms + Colleges..Bachelors., data = cdata, subset = (names != 
+    "2" & names != "16"))
+
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.010922 -0.002959 -0.000542  0.001706  0.014378 
+
+
+Coefficients:
+                           Estimate Std. Error t value Pr(>|t|)    
+(Intercept)              -0.0002228  0.0017553  -0.127 0.899387    
+house.rent.percent        0.0095252  0.0038341   2.484 0.015524 *  
+PCT_POVERTY               0.0001918  0.0000757   2.533 0.013695 *  
+poly(PoliceStations, 2)1  0.0228991  0.0055548   4.122 0.000107 ***
+poly(PoliceStations, 2)2 -0.0012705  0.0051201  -0.248 0.804794    
+BikeRacks                 1.4724195  0.1189287  12.381  < 2e-16 ***
+ParkRestrooms            -6.7440609  3.4654425  -1.946 0.055904 .  
+PublicLibraries          16.3829863  9.3191409   1.758 0.083385 .  
+HeadStartPrograms        15.2903870  3.3218530   4.603 1.95e-05 ***
+Colleges..Bachelors.     18.1490836  8.7174616   2.082 0.041231 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+Residual standard error: 0.004697 on 66 degrees of freedom
+Multiple R-squared:  0.9023,        Adjusted R-squared:  0.889 
+F-statistic: 67.73 on 9 and 66 DF,  p-value: < 2.2e-16
+
+
+confint(lmod5)
+
+
+                                 2.5 %       97.5 %
+(Intercept)              -3.727390e-03 3.281808e-03
+house.rent.percent        1.870176e-03 1.718029e-02
+PCT_POVERTY               4.060676e-05 3.429047e-04
+poly(PoliceStations, 2)1  1.180859e-02 3.398953e-02
+poly(PoliceStations, 2)2 -1.149323e-02 8.952167e-03
+BikeRacks                 1.234971e+00 1.709868e+00
+ParkRestrooms            -1.366304e+01 1.749182e-01
+PublicLibraries          -2.223279e+00 3.498925e+01
+HeadStartPrograms         8.658093e+00 2.192268e+01
+Colleges..Bachelors.      7.441098e-01 3.555406e+01
+
+
+lmods5 = update(lmod5, . ~ . - ParkRestrooms - PublicLibraries)
+
+
+anova(lmods5, lmod5)
+
+
+Analysis of Variance Table
+
+
+Model 1: robbery.density ~ house.rent.percent + PCT_POVERTY + BikeRacks + 
+    ParkRestrooms + PublicLibraries + HeadStartPrograms + Colleges..Bachelors. + 
+    PoliceStations
+Model 2: robbery.density ~ house.rent.percent + PCT_POVERTY + poly(PoliceStations, 
+    2) + BikeRacks + ParkRestrooms + PublicLibraries + HeadStartPrograms + 
+    Colleges..Bachelors.
+  Res.Df       RSS Df  Sum of Sq      F Pr(>F)
+1     67 0.0014576                            
+2     66 0.0014563  1 1.3586e-06 0.0616 0.8048
