@@ -19,7 +19,7 @@ Used Generalized Linear Model in R and gave data-driven policy proposals includi
 
 Assessed Return on Investment stock price data based on control groups. Predicted ESOP’s positive effect on semi-annual stock price performance for listed company Shenzhen Sunsea Communication, as a medium-term investment. Co-authored academic journal, published in school academic periodical ISBN: 978-7-5655-1921-5, Summer 2017.
 
-## Combined Starbucks Dataset, 2017
+## Combined Tidy Starbucks Dataset, 2017
 
 Starbucks had quickly established itself as a premium coffee brand after initially launching in the 1970s. It’s exponential growth and expansion during the 1990s and the early 2000s had made the brand an instant classic for business school case studies globally and had remained as the market leader in multiple industries and market sectors even as of today. 
 
