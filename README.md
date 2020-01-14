@@ -24,3 +24,19 @@ Assessed Return on Investment stock price data based on control groups. Predicte
 Starbucks had quickly established itself as a premium coffee brand after initially launching in the 1970s. It’s exponential growth and expansion during the 1990s and the early 2000s had made the brand an instant classic for business school case studies globally and had remained as the market leader in multiple industries and market sectors even as of today. 
 
 As business school students from a top school, despite not having direct access to Starbucks's internal data, our team is still interested in understanding key factors that influences Starbucks’ strategic decision with its business. We have found a location dataset of Starbucks stores last updated in 2017 and have decided to gather more associated data in order to build a larger dataset for understanding, modeling and forecasting Starbuck’s current and future business strategy within the United States.
+
+## Sentiment and Network Analysis of Starbucks
+
+we are interested in how Twitter users think about the world’s largest coffee company: Starbucks. By using sentiment and network analysis, we will try to answer the questions below: 
+
+-	What kind of topics related to Starbucks are twitter users talking about?
+
+-	What are consumers’ attitudes towards Starbucks?
+
+-	Are there some complaints from customers? If so, what are they?
+
+-	How can Starbucks improve its customer services?
+
+-	Are there some marketing opportunities on twitter?
+
+To answer these questions, we extract 1200 tweets using Twitter API through R and  then perform the analysis, visualize results and draw conclusions.
